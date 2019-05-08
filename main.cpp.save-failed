@@ -1,0 +1,183 @@
+#include <iostream>
+#include <stdlib.h>
+#include <cstring>
+#include <windows.h>
+#include <algorithm>
+using namespace std;
+
+typedef struct node {
+	int  Number;       // 学号
+	char Name[20];     // 姓名
+	char Sex;          // 性别 M or F
+	int  Grade;        // 年级
+	int  Class;        // 班级
+	char Birth[20];    // 生日
+	char Dorm[10];     // 宿舍
+	char Address[20];  // 籍贯
+	struct node *next;
+}node, *LinkList;
+
+void Print(const node* &point);
+node* Creat_list();               // 创建
+void Menu(node* head);                      // 菜单
+void Add(node* head);             // 增加
+void Search(node* head);          // 搜索
+void Delete(node* head);          // 删除
+void Sort(node* head);            // 排序
+void Clear(node *head);           // 清理
+
+void Clear(node* head) {
+    node *p = head;
+    while(p) {
+        node *q = p->next;
+        delete p;
+        p = q;
+    }
+}
+
+node* Creat_list() {
+    node *head;
+    head = new node;
+    head->next = NULL;
+    return head;
+}
+
+void Menu_error(node* head) {     // 错误处理
+    cout << "Input Button_num error" << endl;
+    Menu(head);
+}
+int Student_num = 0;
+int Button_num;
+
+void Menu(node* head) {
+	int Button_num;
+	cout << "输入数字选择功能" << endl;
+	cout << "1: 增加\n" << "2: 搜寻" << endl;
+	cout << "3: 删除\n" << "4: 排序" << endl;
+	cout << "5: 返回菜单" << endl;
+	cin >> Button_num;
+	switch(Button_num) {
+        case 1:  Add(head);
+        case 2:  Search(head);
+        case 3:  Delete(head);
+        case 4:  Sort(head);
+        default: Menu_error(head) ;
+	}
+}
+
+void Print(const node* point) {
+    cout << "该学生信息如下:" << endl;
+    cout << "姓名： " << point->Name << endl;
+    cout << "性别： " << point->Sex << endl;
+    cout << "年级： " << point->Grade << "    班级： " << point->Name << endl;
+    cout << "生日： " << point->Class << endl;
+    cout << "宿舍： " << point->Dorm << endl;
+    cout << "籍贯： " << point->Address << endl;
+}
+
+void Display(const node* head) {
+    cout << "排序后学生表信息如下:" << endl;
+    node *p = head->next;
+    while(p->next->next != NULL) {
+        Print(p);
+        p = p->next;
+    }
+}
+
+void Add(node* head) {
+	cout << "请输入要插入的信息" << endl;
+	node *q = new node;
+	cout << "学号" << endl; cin >> q->Number;
+	cout << "姓名" << endl; cin >> q->Name;
+	cout << "性别" << endl; cin >> q->Sex;
+	cout << "年级" << endl; cin >> q->Grade;
+	cout << "班级" << endl; cin >> q->Class;
+	cout << "生日" << endl; cin >> q->Birth;
+	cout << "宿舍" << endl; cin >> q->Dorm;
+	cout << "籍贯" << endl; cin >> q->Address;
+	q->next = head->next;
+	head->next = q;
+	cout << "增加成功" << endl;
+	Student_num++;
+	Menu(head);
+}
+
+void Search(node * head) {
+    cout << "请要查找的输入学号: ";
+	int Search_num;
+	cin >> Search_num;
+	node *Pointer = new node;
+	Pointer = head->next;
+	int flag = 0;
+	while (Pointer != NULL) {
+		if (Pointer->Number == Search_num) {
+            Print(Pointer);
+			flag = 1;
+			break;
+		}
+		Pointer = Pointer->next;
+	}
+	if (flag != 1) cout << "查无此人" << endl;
+	Menu(head);
+}
+
+void Delete(node* head) {
+    cout << "请要删除的输入学号: ";
+	int Delete_num;
+	cin >> Delete_num;
+	node *Pointer;
+	Pointer = head->next;
+	while (Pointer != NULL) {
+		if (Pointer->next == NULL) {
+			free(Pointer);
+			break;
+		}
+		if (Pointer->next->Number == Delete_num) {
+			Pointer->next = Pointer->next->next;
+			free(Pointer->next);
+			break;
+		}
+		else cout << "错误" << endl;
+		Pointer = Pointer->next;
+	}
+	Student_num--;
+	cout << "删除成功" << endl;
+    Menu(head);
+}
+
+void Sort_list(node* head) {
+  node *p,*q,*t;
+  p = head->next;
+  while(p != NULL) {
+     t=p;
+     q=p->next;
+     while(q->next!=NULL) {
+
+       if(q->Number > t->Number)
+          t=q;
+          q=q->next;
+      }
+      node *pp=p;
+      p=t;
+      t=pp;
+      p=p->next;
+   }
+}
+
+void Sort(node* head) {
+    if(!Student_num) {
+        cout << "学生表为空" << endl;
+        Menu(head);
+    }
+	cout << "正在排序中" << endl;
+	Sleep(2000);        // 暂停5s
+	Sort_list(head);
+    Display(head);
+	Menu(head);
+}
+
+int main() {
+    node *head = Creat_list();
+	Menu(head);
+	return 0;
+}
